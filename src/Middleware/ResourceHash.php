@@ -10,10 +10,8 @@ class ResourceHash extends Middleware
 {
     public string $middleware = 'resourceHash';
 
-
     public function hash(array $resource): string
     {
-
         return '"'.md5(json_encode($resource)).'"';
     }
 
@@ -34,13 +32,13 @@ class ResourceHash extends Middleware
     public function handle(Request $request, Closure $next)
     {
         // Only handle GET requests
-        if(!$request->isMethod('GET')){
+        if (! $request->isMethod('GET')) {
             return $next($request);
         }
 
         // Skip to response, return unless statusCode is equal to 200
         $response = $next($request);
-        if($response->getStatusCode()!==200){
+        if ($response->getStatusCode() !== 200) {
             return $response;
         }
 
@@ -48,7 +46,7 @@ class ResourceHash extends Middleware
 
         // Return if response does not appear to be a JSONAPIResource
         $wrap = JSONAPIResource::$wrap;
-        if(!isset($content->$wrap)){
+        if (! isset($content->$wrap)) {
             return $response;
         }
 
@@ -59,7 +57,7 @@ class ResourceHash extends Middleware
         ];
 
         // Add hash to metadata or create new metadata
-        if(isset($content->$wrap->meta)){
+        if (isset($content->$wrap->meta)) {
             $content->$wrap->meta = array_merge($content->$wrap->meta, $meta);
         } else {
             $content->$wrap->meta = $meta;
@@ -74,7 +72,7 @@ class ResourceHash extends Middleware
             ];
 
             // Add hash to metadata or create new metadata
-            if(isset($content->included[$key]->meta)){
+            if (isset($content->included[$key]->meta)) {
                 $content->included[$key]->meta = array_merge($content->included[$key]->meta, $meta);
             } else {
                 $content->included[$key]->meta = $meta;
