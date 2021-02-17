@@ -17,8 +17,6 @@ class JsonApiResource extends JsonResource
      */
     public function toArray($request)
     {
-
-
         return [
             'id' => $this->{config("jsonapi.resources.{$this->type()}.primaryKeyName")},
             'type' => $this->type(),
@@ -27,8 +25,9 @@ class JsonApiResource extends JsonResource
         ];
     }
 
-    private function prepareRelationships(){
-        $collection = collect(config("jsonapi.resources.{$this->type()}.relationships"))->flatMap(function($related){
+    private function prepareRelationships()
+    {
+        $collection = collect(config("jsonapi.resources.{$this->type()}.relationships"))->flatMap(function ($related) {
             $relatedType = $related['type'];
             $relationship = $related['method'];
 
@@ -52,12 +51,13 @@ class JsonApiResource extends JsonResource
         return $collection->count() > 0 ? $collection : new MissingValue();
     }
 
-    private function prepareRelationshipData($relatedType, $relationship){
-        if($this->whenLoaded($relationship) instanceof MissingValue){
+    private function prepareRelationshipData($relatedType, $relationship)
+    {
+        if ($this->whenLoaded($relationship) instanceof MissingValue) {
             // return new MissingValue();
         }
 
-        if($this->$relationship() instanceof BelongsTo){
+        if ($this->$relationship() instanceof BelongsTo) {
             return new JsonApiIdentifierResource($this->$relationship);
         }
 
@@ -68,11 +68,12 @@ class JsonApiResource extends JsonResource
     {
         $with = [];
 
-        if (strstr($_SERVER['REQUEST_URI'], "include"))  {
+        if (strstr($_SERVER['REQUEST_URI'], 'include')) {
             if ($this->included($request)->isNotEmpty()) {
                 $with['included'] = $this->included($request);
             }
         }
+
         return $with;
     }
 
@@ -86,10 +87,10 @@ class JsonApiResource extends JsonResource
 
     private function relations()
     {
-        return collect(config("jsonapi.resources.{$this->type()}.relationships"))->map(function($relation){
+        return collect(config("jsonapi.resources.{$this->type()}.relationships"))->map(function ($relation) {
             $modelOrCollection = $this->whenLoaded($relation['method']);
 
-            if($modelOrCollection instanceof Model){
+            if ($modelOrCollection instanceof Model) {
                 $modelOrCollection = collect([new JsonApiResource($modelOrCollection)]);
             }
 

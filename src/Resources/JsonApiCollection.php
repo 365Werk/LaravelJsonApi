@@ -8,6 +8,7 @@ use Illuminate\Http\Resources\MissingValue;
 class JsonApiCollection extends ResourceCollection
 {
     public $collects = JsonApiResource::class;
+
     /**
      * Transform the resource collection into an array.
      *
@@ -25,6 +26,7 @@ class JsonApiCollection extends ResourceCollection
     private function mergeIncludedRelations($request)
     {
         $includes = $this->collection->flatMap->included($request)->unique()->values();
+
         return $includes->isNotEmpty() ? $includes : new MissingValue();
     }
 }

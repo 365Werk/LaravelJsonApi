@@ -2,20 +2,18 @@
 
 namespace Werk365\LaravelJsonApi\Services;
 
-use Werk365\LaravelJsonApi\Resources\JsonApiCollection;
-use Werk365\LaravelJsonApi\Resources\JsonApiResource;
-use Werk365\LaravelJsonApi\Resources\JsonApiIdentifierResource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Spatie\QueryBuilder\QueryBuilder;
-
+use Werk365\LaravelJsonApi\Resources\JsonApiCollection;
+use Werk365\LaravelJsonApi\Resources\JsonApiIdentifierResource;
+use Werk365\LaravelJsonApi\Resources\JsonApiResource;
 
 class JsonApiService
 {
-
     /**
      * @param string $modelClass
      * @param string $type
@@ -24,14 +22,12 @@ class JsonApiService
      */
     public function fetchResources(string $modelClass, string $type)
     {
-
         $models = QueryBuilder::for($modelClass)
             ->allowedSorts(config("jsonapi.resources.{$type}.allowedSorts"))
             ->allowedFields(config("jsonapi.resources.{$type}.allowedFields"))
             ->allowedIncludes(config("jsonapi.resources.{$type}.allowedIncludes"))
             ->allowedFilters(config("jsonapi.resources.{$type}.allowedFilters"))
             ->jsonPaginate();
-
 
         return new JsonApiCollection($models);
     }
@@ -46,7 +42,7 @@ class JsonApiService
      */
     public function fetchResource($model, $id = 0, $type = '')
     {
-        if($model instanceof Model){
+        if ($model instanceof Model) {
             return new JsonApiResource($model);
         }
         $pk = (new $model)->getKeyName();
@@ -55,6 +51,7 @@ class JsonApiService
             ->allowedFields(config("jsonapi.resources.{$type}.allowedFields"))
             ->allowedIncludes(config("jsonapi.resources.{$type}.allowedIncludes"))
             ->firstOrFail();
+
         return new JsonApiResource($query);
     }
 
@@ -101,11 +98,12 @@ class JsonApiService
         $model = $modelClass::create($attributes);
 
         if ($relationships) {
-            foreach($relationships as $relationship){
+            foreach ($relationships as $relationship) {
                 $relationship['data']['attributes']['uuid'] = $model->uuid;
-                $relationship["model"] = $this->createRelated(config('jsonapi.resources.' . $relationship['data']['type'] . '.model'), $relationship['data']['attributes']);
+                $relationship['model'] = $this->createRelated(config('jsonapi.resources.'.$relationship['data']['type'].'.model'), $relationship['data']['attributes']);
             }
         }
+
         return (new JsonApiResource($model))
             ->response()
             ->header('Location', route("{$model->type()}.show", [
@@ -123,7 +121,7 @@ class JsonApiService
     {
         $model->update($attributes);
 
-        if($relationships){
+        if ($relationships) {
             $this->handleRelationship($relationships, $model);
         }
 
@@ -138,6 +136,7 @@ class JsonApiService
     public function deleteResource($model)
     {
         $model->delete();
+
         return response(null, 204);
     }
 
@@ -149,7 +148,7 @@ class JsonApiService
      */
     public function fetchRelationship($model, string $relationship)
     {
-        if($model->$relationship instanceof Model){
+        if ($model->$relationship instanceof Model) {
             return new JsonApiIdentifierResource($model->$relationship);
         }
 
@@ -162,12 +161,13 @@ class JsonApiService
 
         $model->$relationship()->dissociate();
 
-        if($id){
+        if ($id) {
             $newModel = $relatedModel->newQuery()->findOrFail($id);
             $model->$relationship()->associate($newModel);
         }
 
         $model->save();
+
         return response(null, 204);
     }
 
@@ -178,7 +178,6 @@ class JsonApiService
         $pk = $model->getKeyName();
 
         $relatedModel->newQuery()->findOrFail($ids);
-
 
         $relatedModel->newQuery()->where($foreignKey, $model->$pk)->update([
             $foreignKey => null,
@@ -201,13 +200,13 @@ class JsonApiService
     public function updateManyToManyRelationships($model, $relationship, $ids)
     {
         $model->$relationship()->sync($ids);
+
         return response(null, 204);
     }
 
     public function fetchRelated($model, $relationship)
     {
-
-        if($model->$relationship instanceof Model){
+        if ($model->$relationship instanceof Model) {
             return new JsonApiResource($model->$relationship);
         }
 //        dd($model, $relationship);
@@ -224,13 +223,11 @@ class JsonApiService
             if ($model->$relationshipName() instanceof BelongsTo) {
                 $this->updateToOneRelationship($model, $relationshipName, $contents['data']['id']);
             }
-            if($model->$relationshipName() instanceof BelongsToMany){
+            if ($model->$relationshipName() instanceof BelongsToMany) {
                 $this->updateManyToManyRelationships($model, $relationshipName, collect($contents['data'])->pluck('id'));
             }
         }
 
         $model->load(array_keys($relationships));
     }
-
-
 }

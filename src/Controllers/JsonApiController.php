@@ -3,21 +3,17 @@
 namespace Werk365\LaravelJsonApi\Controllers;
 
 use App\Http\Controllers\Controller;
-use Werk365\LaravelJsonApi\Requests\JsonApiRequest;
 use App\Users\Models\Address;
+use Werk365\LaravelJsonApi\Requests\JsonApiRequest;
 use Werk365\LaravelJsonApi\Services\JsonApiService;
-
 
 /**
  * @group Addresses
  * APIs for addresses and entries
  * Routes for all addresses points
  */
-
-
 class JsonApiController extends Controller
 {
-
     protected function resourceMethodsWithoutModels()
     {
         return ['index', 'show'];
@@ -33,9 +29,8 @@ class JsonApiController extends Controller
         $this->service = $service;
     }
 
-
     /**
-     * Display a list of addresses
+     * Display a list of addresses.
      *
      * @param string $type
      * @return \Illuminate\Http\Response
@@ -45,9 +40,8 @@ class JsonApiController extends Controller
         return $this->service->fetchResources(config("jsonapi.resources.$type.model"), $type);
     }
 
-
     /**
-     * Display the specified address
+     * Display the specified address.
      *
      * @param  \App\Users\Models\Address $address
      * @return \Illuminate\Http\Response
@@ -102,5 +96,4 @@ class JsonApiController extends Controller
     {
         return $this->service->deleteResource($address);
     }
-
 }
