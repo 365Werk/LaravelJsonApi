@@ -2,7 +2,7 @@
 
 namespace Werk365\LaravelJsonApi\Middleware;
 
-use App\Http\Resources\JSONAPIResource;
+use Werk365\LaravelJsonApi\Resources\JsonApiResource;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ class ResourceHash extends Middleware
 
     public function wrap(object $resource): array
     {
-        $wrap = JSONAPIResource::$wrap;
+        $wrap = JsonApiResource::$wrap;
 
         return [$wrap => $resource];
     }
@@ -45,7 +45,7 @@ class ResourceHash extends Middleware
         $content = json_decode($response->getContent());
 
         // Return if response does not appear to be a JSONAPIResource
-        $wrap = JSONAPIResource::$wrap;
+        $wrap = JsonApiResource::$wrap;
         if (! isset($content->$wrap)) {
             return $response;
         }
