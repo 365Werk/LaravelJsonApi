@@ -2,9 +2,9 @@
 
 namespace Werk365\LaravelJsonApi\Middleware;
 
-use Werk365\LaravelJsonApi\Resources\JsonApiResource;
 use Closure;
 use Illuminate\Http\Request;
+use Werk365\LaravelJsonApi\Resources\JsonApiResource;
 
 class ResourceHash extends Middleware
 {
