@@ -2,11 +2,8 @@
 
 namespace Werk365\LaravelJsonApi;
 
-use Werk365\LaravelJsonApi\Middleware\ResourceHash;
 use Illuminate\Support\ServiceProvider;
-use Werk365\LaravelJsonApi\Middleware\IfMatch;
-use Werk365\LaravelJsonApi\Middleware\IfNoneMatch;
-use Werk365\LaravelJsonApi\Middleware\SetEtag;
+use Werk365\LaravelJsonApi\Middleware\ResourceHash;
 
 class LaravelJsonApiServiceProvider extends ServiceProvider
 {
