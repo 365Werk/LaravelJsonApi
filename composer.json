@@ -1,0 +1,41 @@
+{
+    "name": "werk365/laraveljsonapi",
+    "description": ":package_description",
+    "license": "license",
+    "authors": [
+        {
+            "name": "author name",
+            "email": "author email",
+            "homepage": "author homepage"
+        }
+    ],
+    "homepage": "https://github.com/werk365/laraveljsonapi",
+    "keywords": ["Laravel", "LaravelJsonApi"],
+    "require": {
+        "illuminate/support": "~7|~8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~9.0",
+        "orchestra/testbench": "~5|~6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Werk365\\LaravelJsonApi\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Werk365\\LaravelJsonApi\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Werk365\\LaravelJsonApi\\LaravelJsonApiServiceProvider"
+            ],
+            "aliases": {
+                "LaravelJsonApi": "Werk365\\LaravelJsonApi\\Facades\\LaravelJsonApi"
+            }
+        }
+    }
+}
