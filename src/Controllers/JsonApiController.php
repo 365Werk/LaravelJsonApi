@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Users\Models\Address;
 use Werk365\LaravelJsonApi\Requests\JsonApiRequest;
 use Werk365\LaravelJsonApi\Services\JsonApiService;
+use Werk365\LaravelJsonApi\Services\ModelResolvingService;
 
 /**
  * @group Addresses
@@ -23,10 +24,12 @@ class JsonApiController extends Controller
      * @var JSONAPIService
      */
     private $service;
+    private $model;
 
-    public function __construct(JsonApiService $service)
+    public function __construct(JsonApiService $service, ModelResolvingService $resolve)
     {
         $this->service = $service;
+        $this->model = $resolve;
     }
 
     /**
@@ -37,7 +40,7 @@ class JsonApiController extends Controller
      */
     public function index(string $type)
     {
-        return $this->service->fetchResources(config("jsonapi.resources.$type.model"), $type);
+        return $this->service->fetchResources($this->model->resolve($type), $type);
     }
 
     /**
@@ -48,7 +51,8 @@ class JsonApiController extends Controller
      */
     public function show($type, $id)
     {
-        return $this->service->fetchResource(config("jsonapi.resources.$type.model"), $id, $type);
+
+        return $this->service->fetchResource($this->model->resolve($type, $id));
     }
 
     /**
@@ -69,9 +73,9 @@ class JsonApiController extends Controller
      * @bodyParam data.attributes.municipality string required The municipality name
      * @bodyParam data.attributes.country string required The country name
      */
-    public function store(JSONAPIRequest $request)
+    public function store(JSONAPIRequest $request, $type)
     {
-        return $this->service->createResource(Address::class, $request->input('data.attributes'), $request->input('data.relationships'));
+        return $this->service->createResource($this->model->resolve($type), $request->input('data.attributes'), $request->input('data.relationships'));
     }
 
     /**
@@ -81,9 +85,9 @@ class JsonApiController extends Controller
      * @param  \App\Users\Models\Address  $address
      * @return \Illuminate\Http\Response
      */
-    public function update(JSONAPIRequest $request, Address $address)
+    public function update(JSONAPIRequest $request, $type, $id)
     {
-        return $this->service->updateResource($address, $request->input('data.attributes'), $request->input('data.relationships'));
+        return $this->service->updateResource($this->model->resolve($type, $id), $request->input('data.attributes'), $request->input('data.relationships'));
     }
 
     /**
@@ -92,8 +96,8 @@ class JsonApiController extends Controller
      * @param  \App\Users\Models\Address  $address
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Address $address)
+    public function destroy($type, $id)
     {
-        return $this->service->deleteResource($address);
+        return $this->service->deleteResource($this->model->resolve($type, $id));
     }
 }

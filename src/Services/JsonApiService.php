@@ -20,7 +20,7 @@ class JsonApiService
      *
      * @return Response
      */
-    public function fetchResources(string $modelClass, string $type)
+    public function fetchResources($modelClass, string $type)
     {
         $models = QueryBuilder::for($modelClass)
             ->allowedSorts(config("jsonapi.resources.{$type}.allowedSorts"))

@@ -41,27 +41,43 @@ class ResourceHash extends Middleware
         if ($response->getStatusCode() !== 200) {
             return $response;
         }
-
+        
         $content = json_decode($response->getContent());
-
+        
         // Return if response does not appear to be a JSONAPIResource
         $wrap = JsonApiResource::$wrap;
         if (! isset($content->$wrap)) {
             return $response;
         }
 
-        // Get hash of primary resource
-        $resource = $this->wrap($content->$wrap);
-        $meta = [
-            'hash' => $this->hash($resource),
-        ];
-
-        // Add hash to metadata or create new metadata
-        if (isset($content->$wrap->meta)) {
-            $content->$wrap->meta = array_merge($content->$wrap->meta, $meta);
-        } else {
-            $content->$wrap->meta = $meta;
+        $resources = $content->$wrap;
+        if(!is_array($resources)){
+            $resources = [$resources];
         }
+
+        // Get hash of primary resource
+        foreach($resources as $key => $resource){
+            $meta = [
+                'hash' => $this->hash($this->wrap($resource)),
+            ];
+    
+            // Add hash to metadata or create new metadata
+            if(is_array($content->$wrap)){
+                if (isset($content->$wrap[$key]->meta)) {
+                    $content->$wrap[$key]->meta = array_merge($content->$wrap[$key]->meta, $meta);
+                } else {
+                    $content->$wrap[$key]->meta = $meta;
+                }
+            } else {
+                if (isset($content->$wrap->meta)) {
+                    $content->$wrap->meta = array_merge($content->$wrap->meta, $meta);
+                } else {
+                    $content->$wrap->meta = $meta;
+                }
+            }
+
+        }
+        
 
         // Handle included resources
         $includes = $content->included ?? [];
