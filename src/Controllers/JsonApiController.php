@@ -51,7 +51,6 @@ class JsonApiController extends Controller
      */
     public function show($type, $id)
     {
-
         return $this->service->fetchResource($this->model->resolve($type, $id));
     }
 
