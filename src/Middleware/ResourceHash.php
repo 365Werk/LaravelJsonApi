@@ -32,7 +32,7 @@ class ResourceHash extends Middleware
     public function handle(Request $request, Closure $next)
     {
         // Only handle GET requests
-        if (! $request->isMethod('GET')) {
+        if (! $request->isMethod('GET') || $request->header('X-From-Middleware') === 'IfMatch') {
             return $next($request);
         }
 
