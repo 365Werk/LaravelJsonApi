@@ -18,7 +18,7 @@ class JsonApiCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection,
+            'data' => $this->collection->map->toArray($request)->all(),
             'included' => $this->mergeIncludedRelations($request),
         ];
     }
