@@ -15,8 +15,8 @@ class JsonApiIdentifierResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => (string) $this->{config("jsonapi.resources.{$this->type()}.primaryKeyName")},
-            'type' => $this->type(),
+            'id' => (string) $this->{config("jsonapi.resources.{$this->type}.primaryKeyName")},
+            'type' => $this->type,
         ];
     }
 }

@@ -18,8 +18,8 @@ class JsonApiResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->{config("jsonapi.resources.{$this->type()}.primaryKeyName")},
-            'type' => $this->type(),
+            'id' => $this->{config("jsonapi.resources.{$this->type}.primaryKeyName")},
+            'type' => $this->type,
             'attributes' => $this->allowedAttributes(),
             'relationships' => $this->prepareRelationships(),
         ];
@@ -27,7 +27,7 @@ class JsonApiResource extends JsonResource
 
     private function prepareRelationships()
     {
-        $collection = collect(config("jsonapi.resources.{$this->type()}.relationships"))->flatMap(function ($related) {
+        $collection = collect(config("jsonapi.resources.{$this->type}.relationships"))->flatMap(function ($related) {
             $relatedType = $related['type'];
             $relationship = $related['method'];
 
@@ -35,12 +35,12 @@ class JsonApiResource extends JsonResource
                 $relatedType => [
                     'links' => [
                         'self'    => route(
-                            "{$this->type()}.relationships.{$relatedType}",
-                            [config("jsonapi.resources.{$this->type()}.object_name") => $this->{config("jsonapi.resources.{$this->type()}.primaryKeyName")}]
+                            "{$this->type}.relationships.{$relatedType}",
+                            [config("jsonapi.resources.{$this->type}.object_name") => $this->{config("jsonapi.resources.{$this->type}.primaryKeyName")}]
                         ),
                         'related' => route(
-                            "{$this->type()}.{$relatedType}",
-                            [config("jsonapi.resources.{$this->type()}.object_name") => $this->{config("jsonapi.resources.{$this->type()}.primaryKeyName")}]
+                            "{$this->type}.{$relatedType}",
+                            [config("jsonapi.resources.{$this->type}.object_name") => $this->{config("jsonapi.resources.{$this->type}.primaryKeyName")}]
                         ),
                     ],
                     'data' => $this->prepareRelationshipData($relatedType, $relationship),
@@ -87,7 +87,7 @@ class JsonApiResource extends JsonResource
 
     private function relations()
     {
-        return collect(config("jsonapi.resources.{$this->type()}.relationships"))->map(function ($relation) {
+        return collect(config("jsonapi.resources.{$this->type}.relationships"))->map(function ($relation) {
             $modelOrCollection = $this->whenLoaded($relation['method']);
 
             if ($modelOrCollection instanceof Model) {

@@ -71,8 +71,8 @@ class JsonApiService
 
         return (new JsonApiResource($model))
             ->response()
-            ->header('Location', route("{$model->type()}.show", [
-                Str::singular($model->type()) => $model,
+            ->header('Location', route("{$model->type}.show", [
+                Str::singular($model->type) => $model,
             ], false));
     }
 
@@ -106,8 +106,8 @@ class JsonApiService
 
         return (new JsonApiResource($model))
             ->response()
-            ->header('Location', route("{$model->type()}.show", [
-                Str::singular($model->type()) => $model,
+            ->header('Location', route("{$model->type}.show", [
+                Str::singular($model->type) => $model,
             ], false));
     }
 
